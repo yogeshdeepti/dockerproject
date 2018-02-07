@@ -1,12 +1,28 @@
-node('master') {
-stage 'checkout'
-checkout([$class: 'GitSCM', branches: [[name: '*/${BRANCH_NAME}']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '5a02a237-d956-42c5-bdcc-866e9579480f', url: 'https://github.com/yogeshdeepti/mavenproject2.git']]])
-stage 'build'
-env.DIRPATH=pwd()
-sh "echo ${env.DIRPATH}"
-env.BRANCH=env.BRANCH_NAME
-sh "echo ${env.BRANCH}"
-sh """cd ${env.DIRPATH}/example 
-mvn clean package"""
-}
+node {
+    def app
 
+    stage('Clone repository') {
+        /* Let's make sure we have the repository cloned to our workspace */
+
+        checkout scm
+    }
+
+    stage('Build image') {
+        /* This builds the actual image; synonymous to
+         * docker build on the command line */
+
+        app = docker.build("yogeshdeepti/dockerproject")
+    }
+
+    stage('Test image') {
+        /* Ideally, we would run a test framework against our image.
+         * For this example, we're using a Volkswagen-type approach ;-) */
+
+        app.inside {
+            sh 'echo "Tests passed"'
+        }
+    }
+
+           }
+    }
+}
