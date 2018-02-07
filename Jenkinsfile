@@ -1,17 +1,19 @@
 node {
     def app
 
-    stage('Clone repository') {
-        /* Let's make sure we have the repository cloned to our workspace */
+    stage 'checkout' {
+checkout([$class: 'GitSCM', branches: [[name: '*/${BRANCH_NAME}']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '5a02a237-d956-42c5-bdcc-866e9579480f', url: 'https://github.com/yogeshdeepti/mavenproject2.git']]])
 
-        checkout scm
     }
 
     stage('Build image') {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
-
-        app = docker.build("dockerproject/example")
+        env.DIRPATH=pwd()
+        sh "echo ${env.DIRPATH}"
+        env.BRANCH=env.BRANCH_NAME
+        sh "echo ${env.BRANCH}"
+        app = docker.build("${env.DIRPATH}/example")
     }
 
     stage('Test image') {
