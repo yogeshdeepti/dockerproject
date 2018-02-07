@@ -1,14 +1,13 @@
 node {
     def app
-
     stage 'checkout' {
-checkout scm
+        checkout scm
     }
 
     stage('Build image') {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
-              app = docker.build("dockerproject/example")
+              app = docker.build("")
     }
 
     stage('Test image') {
